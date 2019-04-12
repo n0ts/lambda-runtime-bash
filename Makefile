@@ -13,7 +13,7 @@ build: # Buuild lambda function for build layer
 	      --timeout 900 \
 	      --memory-size 256 \
 	      --environment Variables={S3_BUCKET=$(S3_BUCKET)} \
-	      --role arn:aws:iam::$(AWS_ACCOUNT_ID):role/service-role/$(LAMBDA_ROLE)
+	      --role arn:aws:iam::$(AWS_ACCOUNT_ID):role/$(LAMBDA_ROLE)
 	@aws lambda invoke \
 	      --invocation-type Event \
 	      --function-name custom-runtime-layer-creater \
@@ -49,7 +49,7 @@ build_sample: # Build sample function with aws-cli layer
 	         --handler function.handler \
 	         --runtime provided \
 	         --timeout 60 \
-	         --role arn:aws:iam::$(AWS_ACCOUNT_ID):role/service-role/$(LAMBDA_ROLE) \
+	         --role arn:aws:iam::$(AWS_ACCOUNT_ID):role/$(LAMBDA_ROLE) \
 	         --layers "$$layer"
 
 .PHONY: clean
