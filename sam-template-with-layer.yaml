@@ -1,0 +1,61 @@
+# AWS Serverless Application Model (SAM)
+# https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SAM template for aws-cli layer and sample function
+
+# More info about Globals
+# https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Handler: function.handler
+    Runtime: provided
+    MemorySize: 512
+    Timeout: 60
+    Environment:
+      Variables:
+        AWS_ACCOUNT_ID: !Ref 'AWS::AccountId'
+
+Parameters:
+  LambdaRole:
+    Default: LambdaRole
+    Type: String
+
+Resources:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  AwsCliFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: sample-included-aws-cli
+      Description: Sample function using aws-cli
+      CodeUri: sample/
+      Role: !Join
+        - ''
+        - - 'arn:aws:iam::'
+          - !Ref 'AWS::AccountId'
+          - ':role/'
+          - !Ref LambdaRole
+      Layers:
+        - !Ref AwsCliLayer
+      Events:
+        AwsCliSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: "cron(0 12 * * ? *)"
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesslayerversion
+  AwsCliLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: aws-cli-layer
+      Description: AWS CLI layer
+      ContentUri: aws-cli-layer/
+      RetentionPolicy: Retain
+
+Outputs:
+   AwsCliFunction:
+     Description: "Aws Cli Lambda Function ARN"
+     Value: !GetAtt AwsCliFunction.Arn
+   AwsCliLayer:
+     Description: "Aws Cli Layer Logical ID"
+     Value: !Ref AwsCliLayer

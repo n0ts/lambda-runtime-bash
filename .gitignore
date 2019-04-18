@@ -1,4 +1,4 @@
 .DS_Store
 *.zip
-./aws-cli-layer/
-output.txt
+aws-cli-layer/
+.out*
